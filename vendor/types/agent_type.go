@@ -1,4 +1,4 @@
-package agent
+package types
 
 const (
 	AgentStateMin AgentState = iota
@@ -9,6 +9,6 @@ const (
 
 type AgentState int
 
-func (as AgentState)IsValid() bool {
+func (as AgentState) IsValid() bool {
 	return as > AgentStateMin && as < AgentStateMax
 }

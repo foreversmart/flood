@@ -1,4 +1,4 @@
-package agent
+package service
 
 import (
 	"github.com/go-kit/kit/endpoint"

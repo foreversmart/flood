@@ -1,24 +1,17 @@
 package agent
 
 import (
-	"fmt"
 	"errors"
+	"fmt"
+	"types"
 )
 
-type AgentService interface {
-	State() AgentState
-	Start() error
-	Stop() error
-	Name() string
-	Operate(id, operate string, data interface{}) (error, interface{})
-}
-
 type DefaultAgent struct {
-	state AgentState
+	state types.AgentState
 	name  string
 }
 
-func (as DefaultAgent) State() AgentState {
+func (as DefaultAgent) State() types.AgentState {
 	return as.state
 }
 
@@ -51,5 +44,3 @@ func (as DefaultAgent) Operate(id, operate string, data interface{}) (error, int
 		return errors.New("cant surpport operate type"), nil
 	}
 }
-
-type ServiceMiddleware func(AgentService) AgentService
