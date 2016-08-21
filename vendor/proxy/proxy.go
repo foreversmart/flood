@@ -1,36 +1,36 @@
-package server
+package proxy
 
 import (
-	"flood/agent"
-	"fmt"
 	"github.com/go-kit/kit/endpoint"
-	"golang.org/x/net/context"
-
 	"github.com/go-kit/kit/log"
-	"time"
-
-	jujuratelimit "github.com/juju/ratelimit"
-	"github.com/sony/gobreaker"
+	"golang.org/x/net/context"
 
 	"github.com/go-kit/kit/circuitbreaker"
 	"github.com/go-kit/kit/loadbalancer"
 	"github.com/go-kit/kit/loadbalancer/static"
 	kitratelimit "github.com/go-kit/kit/ratelimit"
 	httptransport "github.com/go-kit/kit/transport/http"
+	jujuratelimit "github.com/juju/ratelimit"
+	"github.com/sony/gobreaker"
+
+	"service"
+
+	"fmt"
 	"io"
 	"net/url"
 	"strings"
+	"time"
 )
 
-func ProxyingMiddleware(proxyList string, ctx context.Context, logger log.Logger) agent.ServiceMiddleware {
+func ProxyingMiddleware(proxyList string, ctx context.Context, logger log.Logger) service.ServiceMiddleware {
 	if proxyList == "" {
 		logger.Log("proxy_to", "none")
-		return func(next agent.AgentService) agent.AgentService { return next }
+		return func(next service.AgentService) service.AgentService { return next }
 	}
 	proxies := split(proxyList)
 	logger.Log("proxy_to", fmt.Sprint(proxies))
 
-	return func(next agent.AgentService) agent.AgentService {
+	return func(next service.AgentService) service.AgentService {
 		var (
 			qps         = 100 // max to each instance
 			publisher   = static.NewPublisher(proxies, factory(ctx, qps), logger)
@@ -45,15 +45,15 @@ func ProxyingMiddleware(proxyList string, ctx context.Context, logger log.Logger
 
 // Proxymw implements OperateService, forwarding Uppercase requests to the
 // provided endpoint, and serving all other (i.e. Count) requests via the
-// embedded agent.AgentService.
+// embedded service.AgentService.
 type Proxymw struct {
 	context.Context
-	OperateEndpoint    endpoint.Endpoint // ...except Uppercase, which gets served by this endpoint
-	agent.AgentService                   // Serve most requests via this embedded service...
+	OperateEndpoint      endpoint.Endpoint // ...except Uppercase, which gets served by this endpoint
+	service.AgentService                   // Serve most requests via this embedded service...
 }
 
 func (mw Proxymw) Operate(id, operate string, data interface{}) (err error) {
-	_, err = mw.OperateEndpoint(mw.Context, agent.OperateRequest{Id: id, Operate: operate, Data: data})
+	_, err = mw.OperateEndpoint(mw.Context, service.OperateRequest{Id: id, Operate: operate, Data: data})
 	return
 }
 
@@ -81,8 +81,8 @@ func makeOperateProxy(ctx context.Context, instance string) endpoint.Endpoint {
 	return httptransport.NewClient(
 		"GET",
 		u,
-		agent.EncodeRequest,
-		agent.DecodeOperateResponse,
+		service.EncodeRequest,
+		service.DecodeOperateResponse,
 	).Endpoint()
 }
 

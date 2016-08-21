@@ -2,21 +2,29 @@ package main
 
 import (
 	"code.google.com/p/go.net/context"
-	"flood/server"
-	"kit/log"
-	"os"
-	"flood/agent"
+	httptransport "github.com/go-kit/kit/transport/http"
+
+	"flood/server/agent"
+	. "log"
+	"net/http"
+	"service"
 )
 
 func main() {
-	var logger log.Logger
-	logger = log.NewLogfmtLogger(os.Stderr)
-	logger = log.NewContext(logger).With("listen", "8090").With("caller", log.DefaultCaller)
+	server()
+}
 
+func server() {
 	ctx := context.Background()
+	as := agent.DefaultAgent{}
 
-	var as agent.AgentService
-	proxy := server.ProxyingMiddleware("127.0.0.1:8090", ctx, logger)(as)
-	proxy.Operate("1231", "start", nil)
+	startHandler := httptransport.NewServer(
+		ctx,
+		service.MakeOperateEndpoint(as),
+		service.DecodeOperateRequest,
+		service.EncodeResponse,
+	)
 
+	http.Handle("/operate", startHandler)
+	Fatal(http.ListenAndServe(":8091", nil))
 }

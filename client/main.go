@@ -2,25 +2,30 @@ package main
 
 import (
 	"code.google.com/p/go.net/context"
-	"flood/agent/protocol"
-	"github.com/desperado-bvb/dortmund/agent"
 	httptransport "github.com/go-kit/kit/transport/http"
-	"github.com/qiniu/log"
+
+	"log"
 	"net/http"
+
+	"flood/client/agent"
+	"service"
 )
 
 func main() {
+	go clientServer()
+}
+
+func clientServer() {
 	ctx := context.Background()
-	as := protocol.DefaultAgent{}
+	as := agent.DefaultAgent{}
 
 	startHandler := httptransport.NewServer(
 		ctx,
-		agent.MakeOperateEndpoint(as),
-		agent.DecodeOperateRequest,
-		agent.EncodeResponse,
+		service.MakeOperateEndpoint(as),
+		service.DecodeOperateRequest,
+		service.EncodeResponse,
 	)
 
 	http.Handle("/operate", startHandler)
-	log.Info("test")
 	log.Fatal(http.ListenAndServe(":8090", nil))
 }
