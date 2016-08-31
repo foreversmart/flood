@@ -6,9 +6,10 @@ type Task struct {
 	BeforeIdle  int64   `json:"before_idle"`
 	AfterIdle   int64   `json:"after_idle"`
 	Items       []*Item `json:"items"`
-	Repeat      int     `json:"repeat"`
-	Keep        int     `json:"keep"`
+	Repeat      int     `json:"repeat"` // task max repeat times
+	Keep        int     `json:"keep"`   // task max keep alive time
 	Concurrence int     `json:"concurrence"`
+	RateLimit   int     `json:"rate_limit"`
 }
 
 // execution item describe the request content
