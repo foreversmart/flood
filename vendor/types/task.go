@@ -23,6 +23,6 @@ type Content struct {
 	Url      string      `json:"url"`
 	Header   http.Header `json:"header"`
 	Method   string      `json:"method"`
-	Body     string      `json:"body"`
+	Body     []byte      `json:"body"`
 	DataType string      `json:"data_type"`
 }
