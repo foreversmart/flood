@@ -11,12 +11,14 @@ type Task struct {
 	Concurrence int     `json:"concurrence"`
 }
 
+// execution item describe the request content
 type Item struct {
 	BeforeIdle int64   `json:"before_idle"`
 	AfterIdle  int64   `json:"after_idle"`
 	Content    Content `json:"content"`
 }
 
+// execution request content
 type Content struct {
 	Url      string      `json:"url"`
 	Header   http.Header `json:"header"`
