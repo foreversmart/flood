@@ -10,7 +10,18 @@ type Task struct {
 	Keep        int     `json:"keep"`   // task max keep alive time
 	Concurrence int     `json:"concurrence"`
 	RateLimit   int     `json:"rate_limit"`
+
+	TaskState TaskState `json:"task_state"`
 }
+
+type TaskState int
+
+const (
+	TaskIdle TaskState = iota
+	TaskPendding
+	TaskRunning
+	TaskStopped
+)
 
 // execution item describe the request content
 type Item struct {
