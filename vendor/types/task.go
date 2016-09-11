@@ -3,6 +3,7 @@ package types
 import "net/http"
 
 type Task struct {
+	Id          string  `json:"id"`
 	BeforeIdle  int64   `json:"before_idle"`
 	AfterIdle   int64   `json:"after_idle"`
 	Items       []*Item `json:"items"`
