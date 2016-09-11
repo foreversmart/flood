@@ -6,11 +6,11 @@ import (
 	"proxy"
 	"service"
 
-	"code.google.com/p/go.net/context"
+	"golang.org/x/net/context"
 )
 
 var (
-	Client *service.AgentService
+	Client service.AgentService
 )
 
 func init() {
@@ -20,6 +20,10 @@ func init() {
 
 	ctx := context.Background()
 
-	var as service.AgentService
-	Client = proxy.ProxyingMiddleware("127.0.0.1:8090", ctx, logger)(as)
+	//var as service.AgentService
+	Client = proxy.ProxyingMiddleware("127.0.0.1:8090", ctx, logger)
+}
+
+func Start() {
+	Client.Operate("123", )
 }

@@ -1,13 +1,13 @@
 package main
 
 import (
-	"code.google.com/p/go.net/context"
 	httptransport "github.com/go-kit/kit/transport/http"
 
 	"log"
 	"net/http"
 
 	"flood/client/agent"
+	"golang.org/x/net/context"
 	"service"
 )
 
@@ -17,7 +17,7 @@ func main() {
 
 func clientServer() {
 	ctx := context.Background()
-	as := agent.DefaultAgent{}
+	as := agent.NewAgent()
 
 	startHandler := httptransport.NewServer(
 		ctx,

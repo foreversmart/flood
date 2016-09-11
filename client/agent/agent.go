@@ -2,24 +2,31 @@ package agent
 
 import (
 	"errors"
+	"flood/client/executor"
+	"flood/client/task_manager"
 	"fmt"
 	"types"
 )
 
 type DefaultAgent struct {
-	state types.AgentState
-	name  string
+	state       types.AgentState
+	name        string
+	TaskManager *task_manager.TaskManager
+}
+
+func NewAgent() DefaultAgent {
+	return DefaultAgent{
+		TaskManager: task_manager.NewTaskManager(),
+	}
 }
 
 func (as DefaultAgent) State() types.AgentState {
 	return as.state
 }
 
-func (as DefaultAgent) Name() string {
-	return as.name
-}
-
-func (as DefaultAgent) Start() error {
+func (as DefaultAgent) Start(task *types.Task) error {
+	as.TaskManager.Add(task)
+	executor.Executor.Run(task)
 	fmt.Println(as.name + "start")
 	return nil
 }
@@ -32,13 +39,11 @@ func (as DefaultAgent) Stop() error {
 func (as DefaultAgent) Operate(id, operate string, data interface{}) (error, interface{}) {
 	fmt.Println(as.name + "operate")
 	switch operate {
-	case "start":
-		return as.Start(), nil
-	case "stop":
+	case types.CommandStart:
+		return as.Start(data.(*types.Task)), nil
+	case types.CommandStop:
 		return as.Stop(), nil
-	case "name":
-		return nil, as.Name()
-	case "state":
+	case types.CommandState:
 		return nil, as.State()
 	default:
 		return errors.New("cant surpport operate type"), nil
