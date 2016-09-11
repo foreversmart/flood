@@ -36,7 +36,7 @@ func (as DefaultAgent) Stop() error {
 	return nil
 }
 
-func (as DefaultAgent) Operate(id, operate string, data interface{}) (error, interface{}) {
+func (as DefaultAgent) Operate(id, operate types.CommandType, data interface{}) (error, interface{}) {
 	fmt.Println(as.name + "operate")
 	switch operate {
 	case types.CommandStart:

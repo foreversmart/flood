@@ -7,6 +7,7 @@ import (
 	"service"
 
 	"golang.org/x/net/context"
+	"types"
 )
 
 var (
@@ -24,6 +25,7 @@ func init() {
 	Client = proxy.ProxyingMiddleware("127.0.0.1:8090", ctx, logger)
 }
 
-func Start() {
-	Client.Operate("123", )
+func Start(task *types.Task) error {
+	err, _ := Client.Operate(task.Id, types.CommandStart, task)
+	return err
 }
