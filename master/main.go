@@ -1,6 +1,9 @@
 package main
 
 import (
+	_ "flood/master/routers"
+	"github.com/astaxie/beego"
+
 	"code.google.com/p/go.net/context"
 	httptransport "github.com/go-kit/kit/transport/http"
 
@@ -11,7 +14,9 @@ import (
 )
 
 func main() {
-	server()
+	go server()
+
+	beego.Run()
 }
 
 func server() {

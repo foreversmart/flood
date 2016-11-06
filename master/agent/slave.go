@@ -22,7 +22,8 @@ func init() {
 	ctx := context.Background()
 
 	//var as service.AgentService
-	Client = proxy.ProxyingMiddleware("127.0.0.1:8090", ctx, logger)
+	var as service.AgentService
+	Client = proxy.ProxyingMiddleware("127.0.0.1:8090", ctx, logger)(as)
 }
 
 func Start(task *types.Task) error {
