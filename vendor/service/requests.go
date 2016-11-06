@@ -3,15 +3,16 @@ package service
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/qiniu/log"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"types"
 )
 
 type OperateRequest struct {
-	Id      string      `json:"id"`
-	Operate string      `json:"operate"`
-	Data    interface{} `json:"data"`
+	Id      string            `json:"id"`
+	Operate types.CommandType `json:"operate"`
+	Data    interface{}       `json:"data"`
 }
 
 func DecodeOperateRequest(r *http.Request) (interface{}, error) {

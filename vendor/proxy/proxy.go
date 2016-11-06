@@ -20,6 +20,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"types"
 )
 
 func ProxyingMiddleware(proxyList string, ctx context.Context, logger log.Logger) service.ServiceMiddleware {
@@ -52,7 +53,7 @@ type Proxymw struct {
 	service.AgentService                   // Serve most requests via this embedded service...
 }
 
-func (mw Proxymw) Operate(id, operate string, data interface{}) (err error) {
+func (mw Proxymw) Operate(id string, operate types.CommandType, data interface{}) (err error, res interface{}) {
 	_, err = mw.OperateEndpoint(mw.Context, service.OperateRequest{Id: id, Operate: operate, Data: data})
 	return
 }
