@@ -2,8 +2,8 @@ package agent
 
 import (
 	"errors"
-	"flood/client/executor"
-	"flood/client/task_manager"
+	"flood/slave/executor"
+	"flood/slave/task_manager"
 	"fmt"
 	"types"
 )

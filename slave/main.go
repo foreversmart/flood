@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"flood/client/agent"
+	"flood/slave/agent"
 	"golang.org/x/net/context"
 	"service"
 )

@@ -4,7 +4,7 @@ import (
 	"code.google.com/p/go.net/context"
 	httptransport "github.com/go-kit/kit/transport/http"
 
-	"flood/server/agent"
+	"flood/master/agent"
 	. "log"
 	"net/http"
 	"service"
