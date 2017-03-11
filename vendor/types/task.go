@@ -7,9 +7,9 @@ type Task struct {
 	BeforeIdle  int64   `json:"before_idle"`
 	AfterIdle   int64   `json:"after_idle"`
 	Items       []*Item `json:"items"`
-	Repeat      int     `json:"repeat"` // task max repeat times
-	Keep        int     `json:"keep"`   // task max keep alive time
-	Concurrence int     `json:"concurrence"`
+	Repeat      int     `json:"repeat"`      // task max repeat times
+	Keep        int     `json:"keep"`        // task max keep alive time
+	Concurrence int     `json:"concurrence"` // task max concurrence
 	RateLimit   int     `json:"rate_limit"`
 
 	TaskState TaskState `json:"task_state"`
@@ -26,9 +26,9 @@ const (
 
 // execution item describe the request content
 type Item struct {
-	BeforeIdle int64   `json:"before_idle"`
-	AfterIdle  int64   `json:"after_idle"`
-	Content    Content `json:"content"`
+	BeforeIdle int64    `json:"before_idle"`
+	AfterIdle  int64    `json:"after_idle"`
+	Content    *Content `json:"content"`
 }
 
 // execution request content

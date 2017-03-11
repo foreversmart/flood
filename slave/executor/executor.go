@@ -1,66 +1,62 @@
 package executor
 
 import (
-	"bytes"
-	"heka/build/heka/src/code.google.com/p/gogoprotobuf/io"
-	"net/http"
+	"sync"
 	"time"
 	"types"
 )
 
-type _Executor struct{}
-
-var (
-	Executor *_Executor
-)
-
-func (_ *_Executor) Run(task *types.Task) {
-	for i := 0; i < task.Concurrence; i++ {
-		go Executor.run(task)
-	}
+type Executor struct {
+	ID          string
+	Task        *types.Task
+	Start       int64
+	End         int64
+	mux         sync.Mutex // lock for meta info
+	concurrence chan bool  // max concurrence execute queue
 
 }
 
-func (_ *_Executor) run(task *types.Task) {
-	start := time.Now()
-	for _, item := range task.Items {
-		time.Sleep(item.BeforeIdle)
+func (executor *Executor) Run() {
+	// set max task concurrence for executor
+	executor.InitConcurrence()
+
+	// task execute no more than task.repeat times
+	for i := 0; i < executor.Task.Repeat; i++ {
+		executor.AddTaskToQueue()
+		// execute task
+		go executor.RunTask()
+	}
+
+
+
+}
+
+func (executor *Executor) InitConcurrence() {
+	executor.concurrence = make(chan bool, executor.Task.Concurrence)
+}
+
+func (executor *Executor) AddTaskToQueue() {
+	executor.concurrence <- true
+}
+
+func (executor *Executor) ReleaseTaskFromQueue() {
+	<-executor
+}
+
+// how to
+func (executor *Executor) RunTask() {
+	defer executor.ReleaseTaskFromQueue()
+
+	for _, item := range executor.Task.Items {
+		time.Sleep(time.Duration(item.BeforeIdle) * time.Second)
 
 		// over max keep
-		if task.Keep > 0 && int(time.Now().Sub(start).Seconds()) > task.Keep {
+		if executor.Task.Keep > 0 && int(time.Now().Add(time.Duration(executor.Start)).Second()) > executor.Task.Keep {
 			return
 		}
 
-		Executor.ExecuteContent(item.Content)
+		Helper.ExecuteContent(item.Content)
 
-		time.Sleep(item.AfterIdle)
+		time.Sleep(time.Duration(item.AfterIdle) * time.Second)
 	}
-}
-
-func (_ *_Executor) ExecuteContent(content *types.Content) (*http.Response, error) {
-	request, err := Executor.Request(content)
-	if err != nil {
-		return nil, err
-	}
-
-	return http.DefaultClient.Do(request)
-}
-
-func (_ *_Executor) Request(content *types.Content) (request *http.Request, err error) {
-	var reader io.Reader
-	if len(content.Body) > 0 {
-		reader = bytes.NewBuffer(content.Body)
-	}
-
-	request, err = http.NewRequest(content.Method, content.Url, reader)
-	if err != nil {
-		return
-	}
-
-	// set headers
-	for key, value := range content.Header {
-		request.Header.Set(key, value)
-	}
-
-	return
 }
